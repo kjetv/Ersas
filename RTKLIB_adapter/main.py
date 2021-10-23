@@ -21,12 +21,20 @@ def rtkconv():
 
 def convbin(rawDataPath):
     cmd = 'convbin.exe -r ubx ' + '"' + rawDataPath + '"'
+    print (cmd)
     #cmd = 'convbin.exe -r ubx GunnerusBow.txt'
     runCommand(cmd,  getAbsolutePath("/bin"))
 
 # https://stackoverflow.com/questions/1296501/find-path-to-currently-running-file
 def getAbsolutePath(relativePath = ""):
     path = os.path.dirname(sys.argv[0])+relativePath
+    path = path.replace('/','\\')
+    print(path)
+    return path
+    #return os.chdir(sys.argv[0])
+
+def getAbsolutePath2(relativePath = ""):
+    path = os.path.abspath(relativePath)
     print(path)
     return path
     #return os.chdir(sys.argv[0])

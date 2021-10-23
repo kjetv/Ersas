@@ -1,0 +1,6 @@
+#Ignore everything
+*
+#Exept for
+!.gitignore
+!*.ubx
+!*.txt
