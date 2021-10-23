@@ -1,18 +1,23 @@
-import sys, os
+from Utils import *
 import subprocess
 
-# https://stackoverflow.com/questions/1296501/find-path-to-currently-running-file
-# This only works in Python terminal
-def getLibraryFolderPath(relativePath = "", dirSeperator = '\\', PathEmbrasing = ""):
-    path = os.path.dirname(sys.argv[0])+relativePath
-    path = path.replace('/', dirSeperator)
-    return PathEmbrasing + path + PathEmbrasing
-    #return os.chdir(sys.argv[0])
-
-def getAbsolutePath2(relativePath = ""):
-    path = os.path.abspath(relativePath)
-    return path
-    #return os.chdir(sys.argv[0])
+class BinaryCommand(object):
+    __filePath__ = ''     # input receiver binary log file 
+    __appName__ = ''
+    def __init__(self, file, appName):
+        self.__filePath__ = file
+        self.__appName__ = appName
+    def toString(self):
+        classAttributes = [a for a in dir(self) if not a.startswith('__') and not callable(getattr(self, a))]
+        commandList = [self.__appName__]
+        for attributeString in classAttributes:
+            attribute = getattr(self, attributeString)
+            if attribute.argument != None:
+                commandList.append(attribute.toString())
+        commandList.append(self.__filePath__)
+        return CommandListString(commandList)
+    def run(self):
+        return runCommand(self.toString())
 
 #https://stackoverflow.com/questions/2231227/python-subprocess-popen-with-a-modified-environment
 def runCommand(cmd, path=getLibraryFolderPath("/bin")):
@@ -41,4 +46,4 @@ class CommandPair(object):
         if self._command != None and self.argument != None:
             return self._command + " " + self.argument
         else:
-            return ''
+            return None
