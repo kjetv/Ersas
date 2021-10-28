@@ -1,23 +1,46 @@
 from Utils import *
+from abc import ABC, abstractmethod
 import subprocess
 
-class BinaryCommand(object):
-    __filePath__ = ''     # input receiver binary log file 
-    __appName__ = ''
-    def __init__(self, file, appName):
-        self.__filePath__ = file
-        self.__appName__ = appName
-    def toString(self):
-        classAttributes = [a for a in dir(self) if not a.startswith('__') and not callable(getattr(self, a))]
-        commandList = [self.__appName__]
-        for attributeString in classAttributes:
-            attribute = getattr(self, attributeString)
-            if attribute.argument != None:
-                commandList.append(attribute.toString())
-        commandList.append(self.__filePath__)
+class BinaryCommand(ABC):
+    @abstractmethod
+    def firstCommands(self):
+        pass
+    @abstractmethod
+    def lastCommands(self):
+        pass
+    def __str__(self):
+        commandList = []
+        commandList += self.firstCommands()
+        commandList += self.options()
+        commandList += self.lastCommands()
         return CommandListString(commandList)
     def run(self):
-        return runCommand(self.toString())
+        return runCommand(self.__str__())
+    # Options, lists all attributes that don't have __ and are independent from order when CUI is used
+    def options(self):
+        commandList = []
+        classAttributes = [a for a in dir(self) if not a.startswith('__') and not callable(getattr(self, a))]
+        for attributeString in classAttributes:
+            attribute = getattr(self, attributeString)
+            if isinstance(attribute,CommandPair):
+                if attribute != None:
+                    commandList.append(str(attribute))
+        return commandList
+
+class GNSSFormat(object):
+    rtcm2 = 'rtcm2'
+    rtcm3 = 'rtcm2'
+    nov = 'nov'
+    ubx = 'ubx'
+    ss2 = 'ss2'
+    hemis = 'hemis'
+    stq = 'stq'
+    javad = 'javad'
+    nvs = 'nvs'
+    binex = 'binex'
+    rinex = 'rinex'
+
 
 #https://stackoverflow.com/questions/2231227/python-subprocess-popen-with-a-modified-environment
 def runCommand(cmd, path=getLibraryFolderPath("/bin")):
@@ -42,8 +65,10 @@ class CommandPair(object):
     def __init__(self, command, argument):
         self._command = command
         self.argument = argument
-    def toString(self):
-        if self._command != None and self.argument != None:
+    def __str__(self):
+        if self != None:
             return self._command + " " + self.argument
         else:
             return None
+    def __eq__(self, obj):
+        return obj == self.argument

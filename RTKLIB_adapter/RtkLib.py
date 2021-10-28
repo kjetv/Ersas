@@ -1,30 +1,32 @@
 from Utils import *
 from BinaryCommand import *
-from RecieverConversion import Convbin, RecieverFormat
+from PostProcessing import *
+from RinexConverter import Convbin
+from Sensors import Sensor, GNSS
+import glob
 
-def rnx2rtkp():
-    return runCommand('rnx2rtkp.exe')
+class RTKLIB(object):
 
-def rtkconv():
-    return runCommand('rtkconv.exe')
+    def __init__(self, sensorDataFolder):
+        self.roverFile = roverFile
+        self.baseFile = baseFile
+        self.navFile = navFile
 
-def convbin(rawDataPath, recieverFormat = RecieverFormat.ubx):
-    if not isinstance(recieverFormat, RecieverFormat):
-        raise TypeError('Reciever format is invalid!')
+    def rnx2rtkp():
+        return runCommand('rnx2rtkp.exe')
 
-    commandList = ['convbin.exe']
+    def rtkconv():
+        return runCommand('rtkconv.exe')
 
-    if recieverFormat != RecieverFormat.unknown:
-        commandList.append('-r')
-        commandList.append(recieverFormat._value_)
-    commandList.append(rawDataPath)
-    print(commandList)
-    return runCommand(CommandListString(commandList))
+    def postProcessRawData(rawDataPath):
+        rinex = Convbin(rawDataPath)
+        process = Rnx2rtkp()
+
 
 if __name__ == '__main__':
-    rawDataPath = getLibraryFolderPath('/testFiles/HavfruenBow.ubx', PathEmbrasing='"')
-    #convbin(rawDataPath, RecieverFormat.ubx)
-    test = Convbin(rawDataPath, RecieverFormat.ubx)
-    print(test.toString())
-    test.run()
+    rawDataPath = getLibraryFolderPath('/testFiles/Gunnerus_bow')
+    print(rawDataPath)
+    text_files = getFileList(rawDataPath)
+    print(text_files)
+
 
