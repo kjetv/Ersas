@@ -15,3 +15,8 @@ def getAbsolutePath2(relativePath = ""):
 
 def getFileList(path):
     return os.listdir(path)
+
+def getDataPath(dataDirectory, fileName, fileFormat):
+    dataDirectory = os.path.dirname(rawDataPath)
+    directoryFiles = getFileList(dataDirectory)
+    

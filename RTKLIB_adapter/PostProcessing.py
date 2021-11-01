@@ -40,4 +40,4 @@ class Rnx2rtkp(BinaryCommand):
     def firstCommands(self):
         return self.__appName__
     def lastCommands(self):
-        return CommandListString(self.__inputFiles__)
+        return self.__inputFiles__
